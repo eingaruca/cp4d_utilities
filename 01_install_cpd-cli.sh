@@ -32,6 +32,13 @@ fi
 
 
 if [ -f $CPD_TGZ ]; then
-    echo "Hola"
+    log_info "Detectando directorio raíz del tgz..."
+    CPD_EXTRACTED_DIR="$(tar -tf "${CPD_TGZ}" | head -n1 | cut -d/ -f1)"
+    log_info "Directorio detectado: ${CPD_EXTRACTED_DIR}"
+    log_info "Extrayendo ${CPD_TGZ}..."
+    tar -xf "${CPD_TGZ}"
+    ls -l
+else
+    log_error "No se ha descargado fichero"
 fi
 # mkdir cpd-cli; cd cpd-cli

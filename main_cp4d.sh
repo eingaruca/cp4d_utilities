@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Paths
+###########################################################
+# CP4D Main Menu
+# Autor: Eldo I.
+###########################################################
+
+# Paths 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONF_DIR="${ROOT_DIR}/conf"
 LIB_DIR="${ROOT_DIR}/lib"
@@ -8,37 +14,58 @@ LIB_DIR="${ROOT_DIR}/lib"
 # Loading modules
 . "${LIB_DIR}/logs.sh"
 
-log_info "Estoy en 01_install_cpd-cli.sh"
-
-# log_info $PATH_CPD_CLI
-
-# Variables
-CPD_CLI_PLATFORM=linux
-CPD_CLI_EDITION=EE
-# Example https://github.com/IBM/cpd-cli/releases/download/v13.1.9/cpd-cli-linux-EE-13.1.9.tgz
-CPD_TGZ="cpd-cli-${CPD_CLI_PLATFORM}-${CPD_CLI_EDITION}-${CPD_CLI_VERSION}.tgz"
-CPD_CLI_URL="https://github.com/IBM/cpd-cli/releases/download/v$CPD_CLI_VERSION/$CPD_TGZ"
-log_info "File $CPD_TGZ"
-
-if [ -f $CPD_TGZ ]; then
-    log_warn "Fichero ya existe, no se descarga"
-    log_warn "File ==> "`(ls -l $CPD_TGZ)`
-
+if [ -f "${CONF_DIR}/env.sh" ]; then
+  # . "${CONF_DIR}/env"
+  source "${CONF_DIR}/env.sh"
+  log_info "Variables cargadas desde conf/env.sh"
 else
-    log_info "Descargamos cpd-cli"
-    wget $CPD_CLI_URL
+  log_warn "No existe fichero conf/env.sh"
 fi
 
+# sudo -i
 
+# # Checking dependencies
+# require_cmd() { 
+#   for c in "$@"; do
+#     command -v "$c" >/dev/null 2>&1 || {
+#       log_error "Falta comando requerido: $c"
+#       exit 1
+#     }
+#   done
+# }
 
-if [ -f $CPD_TGZ ]; then
-    log_info "Detectando directorio raíz del tgz..."
-    CPD_EXTRACTED_DIR="$(tar -tf "${CPD_TGZ}" | head -n1 | cut -d/ -f1)"
-    log_info "Directorio detectado: ${CPD_EXTRACTED_DIR}"
-    log_info "Extrayendo ${CPD_TGZ}..."
-    tar -xf "${CPD_TGZ}"
-    ls -l
-else
-    log_error "No se ha descargado fichero"
-fi
-# mkdir cpd-cli; cd cpd-cli
+# require_cmd bash tar jq
+# command -v wget >/dev/null 2>&1 || command -v curl >/dev/null 2>&1 || {
+#   log_error "Necesitas 'wget' o 'curl' para descargar artefactos."
+#   exit 1
+# }
+
+# === Main Menu ===
+show_menu() {
+  cat <<'EOF'
+==================== CP4D - Launcher ====================
+1) Instalar / actualizar cpd-cli
+q) Salir
+=========================================================
+EOF
+}
+
+# === Menu ===
+while true; do
+  show_menu
+  read -rp "Elige una opción: " opt
+  case "${opt}" in
+    1)
+      sleep 1
+      log_info "Ejecutando módulo 01_install_cpd-cli.sh..."
+      "${ROOT_DIR}/01_install_cpd-cli.sh"
+      ;;
+    q|Q)
+      log_info "Saliendo..."
+      exit 0
+      ;;
+    *)
+      log_warn "Opción no válida."
+      ;;
+  esac
+done
