@@ -16,6 +16,7 @@ LIB_DIR="${ROOT_DIR}/lib"
 
 if [ -f "${CONF_DIR}/env.sh" ]; then
   # . "${CONF_DIR}/env"
+  dos2unix ${CONF_DIR}/env.sh
   source "${CONF_DIR}/env.sh"
   log_info "Variables cargadas desde conf/env.sh"
 else
@@ -44,7 +45,9 @@ fi
 show_menu() {
   cat <<'EOF'
 ==================== CP4D - Launcher ====================
-1) Instalar / actualizar cpd-cli
+1) Instalar pre-requisitos
+2) Instalar / actualizar cpd-cli
+3) Testing cpd-cli
 q) Salir
 =========================================================
 EOF
@@ -57,8 +60,21 @@ while true; do
   case "${opt}" in
     1)
       sleep 1
-      log_info "Ejecutando módulo 01_install_cpd-cli.sh..."
-      "${ROOT_DIR}/01_install_cpd-cli.sh"
+      log_info "Ejecutando módulo 01_prerequisites.sh..."
+      sleep 1
+      ./01_prerequisites.sh
+      ;;
+    2)
+      sleep 1
+      log_info "Ejecutando módulo 02_install_cpd-cli.sh..."
+      sleep 1
+      ./02_install_cpd-cli.sh
+      ;;
+    3)
+      sleep 1
+      log_info "Ejecutando módulo 03_cp4d_checking_components.sh..."
+      sleep 1
+      ./03_cp4d_checking_components.sh
       ;;
     q|Q)
       log_info "Saliendo..."
